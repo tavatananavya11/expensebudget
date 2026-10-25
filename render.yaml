@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: paise-track
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/csrf
+    disk:
+      name: paise-track-data
+      mountPath: /app/data
+      sizeGB: 1
+    envVars:
+      - key: DATABASE_URL
+        value: jdbc:sqlite:/app/data/expensebudget.db

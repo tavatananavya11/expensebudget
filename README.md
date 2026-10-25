@@ -87,6 +87,24 @@ mvn spring-boot:run
 
 The app creates the default `data` directory when it starts. The directory for a custom database path must already exist. Keep a regular backup of the SQLite database while the app is stopped.
 
+### Docker deployment
+
+The Dockerfile is at the repository root, so enter `./Dockerfile` in a hosting service's Dockerfile Path field. The image listens on port `8080`.
+
+SQLite is file-based: configure a persistent disk/volume mounted at `/app/data` on the hosting platform. Otherwise, the platform may discard the database when replacing a container. For cross-device accounts, make sure all users reach the same deployed backend and persistent database. The included Dockerfile does not copy your local SQLite data into the image.
+
+### Deploy to Render
+
+The repository includes `render.yaml` for Render Blueprint deployment. It builds the root `Dockerfile`, configures the app to listen on Render's assigned port, and mounts a persistent disk at `/app/data` for the SQLite database.
+
+1. Push this project to a GitHub repository.
+2. In Render, choose **New → Blueprint** and connect that repository.
+3. Review the `paise-track` web service and its persistent disk. The Blueprint uses a paid Starter service because Render persistent disks require a paid service; review current pricing before deploying.
+4. Apply the Blueprint and wait for the first deploy to finish. Render will provide the public app URL.
+5. Open the URL, create an account, and sign in. All devices must use this same deployed URL to share the same backend and database.
+
+The deployed database starts empty; the local `data/expensebudget.db` file is intentionally not included in the container image. Protect the Render service and database with appropriate access controls and backups.
+
 ## 7. REST API overview
 
 All endpoints are same-origin. Write requests require the CSRF token returned by `GET /api/csrf` in the `X-XSRF-TOKEN` header. The included frontend does this automatically.
